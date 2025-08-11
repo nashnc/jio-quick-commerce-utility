@@ -1,0 +1,36 @@
+/* imported the font   */
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+/* imported the tailwind
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+/* the body */
+
+body {
+  font-family: 'Audiowide', cursive;
+}
+
+/* the body */
+/* remove scroll */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* remove scroll */
+.container {
+  width: 85%;
+  margin: auto;
+  font-size: 1.25em;
+
+}
+
+.dark body {
+  color: #eae0c8;
+  background-color: #18230F;
+}
