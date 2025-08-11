@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "isBilledAsEa": false,
+    "articleCode": "590003515",
+    "articleLabel": "Onion 1 kg",
+    "mostBroughtWeight": "1 kg"
+  },
+  {
+    "id": 2,
+    "isBilledAsEa": true,
+    "articleCode": "590000128",
+    "articleLabel": "Drum Stick",
+    "mostBroughtWeight": ""
+  }
+]
