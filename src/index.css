@@ -30,7 +30,15 @@ input[type="number"]::-webkit-inner-spin-button {
 
 }
 
-.dark body {
+.dark body,
+.dark select,
+.dark option {
   color: #eae0c8;
   background-color: #18230F;
+}
+
+input {
+  caret-color: #e61212;
+  color: #18230F !important;
+
 }
