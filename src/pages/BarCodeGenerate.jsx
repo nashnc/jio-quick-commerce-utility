@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Barcode from "react-barcode";
-import { QRCodeSVG } from "qrcode.react";
-import articleCodes from "./json/articleCodes.json";
+import articleCodes from "../json/articleCodes.json";
+import BarcodeDisplay from "../components/BarcodeDisplay";
+import ArticleCodeInput from "../components/ArticleCodeInput";
 
 const weightOptions = [
   { value: "010150", label: "1 kg" },
@@ -25,6 +25,7 @@ const BarCodeGenerate = () => {
   useEffect(() => {
     if (!articleCode) {
       setArticleLabel("");
+      setUseDefaultPrefix(true);
       return;
     }
 
@@ -34,6 +35,13 @@ const BarCodeGenerate = () => {
 
     if (matchedArticle) {
       setArticleLabel(matchedArticle.articleLabel || "");
+
+      if (matchedArticle.isBilledAsEa) {
+        setUseDefaultPrefix(false);
+      } else {
+        setUseDefaultPrefix(true);
+      }
+
       if (
         matchedArticle.mostBroughtWeight &&
         matchedArticle.mostBroughtWeight.trim() !== ""
@@ -47,6 +55,7 @@ const BarCodeGenerate = () => {
       }
     } else {
       setArticleLabel("");
+      setUseDefaultPrefix(true);
     }
   }, [articleCode]);
 
@@ -60,16 +69,15 @@ const BarCodeGenerate = () => {
   return (
     <div className="container px-4 pt-[10%]">
       <header className="flex items-center justify-center pb-4">
-        <h1>if didn't work tell me....</h1>
+        <h1>Barcode Generator</h1>
       </header>
 
-      {/* Toggle */}
       <div className="mb-6 flex items-center justify-center gap-2">
         <input
           type="checkbox"
           id="prefixToggle"
           checked={useDefaultPrefix}
-          onChange={(e) => setUseDefaultPrefix(e.target.checked)}
+          readOnly
         />
         <label htmlFor="prefixToggle">
           Use 2110000 + weight for code generation
@@ -82,58 +90,35 @@ const BarCodeGenerate = () => {
             useDefaultPrefix ? "justify-between" : "justify-center"
           } gap-3 sm:flex-row`}
         >
-          {useDefaultPrefix && (
-            <div>
-              <p>2110000</p>
-            </div>
-          )}
+          {useDefaultPrefix && <p>2110000</p>}
 
-          <div>
-            <input
-              type="text"
-              className={`${
-                useDefaultPrefix ? "w-[150px]" : "w-full"
-              } rounded-md border border-[rgba(0,0,0,0.5)] p-1`}
-              value={articleCode}
-              onChange={(e) => setArticleCode(e.target.value)}
-              placeholder="Enter Article Code ...."
-            />
-            {/* Display article label below input */}
-          </div>
+          <ArticleCodeInput value={articleCode} onChange={setArticleCode} />
 
           {useDefaultPrefix && (
-            <div>
-              <select
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                className="rounded-md border border-[rgba(0,0,0,0.5)] p-1 text-green-950"
-              >
-                {weightOptions.map((option) => (
-                  <option
-                    key={option.value}
-                    className="text-green-900"
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              className="rounded-md border border-[rgba(0,0,0,0.5)] p-1 text-green-950"
+            >
+              {weightOptions.map((option) => (
+                <option
+                  key={option.value}
+                  className="text-green-900"
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
           )}
         </div>
       </section>
 
-      <section className="mt-5 flex flex-col items-center gap-6">
-        {articleLabel && (
-          <p className="mt-1 text-center text-sm text-gray-600">
-            {articleLabel}
-          </p>
-        )}
-        <Barcode value={finalCode} />
-        <div className="bg-white p-2">
-          <QRCodeSVG value={finalCode} size={180} />
-        </div>
-      </section>
+      <BarcodeDisplay
+        finalCode={finalCode}
+        DEFAULT_CODE={DEFAULT_CODE}
+        articleLabel={articleLabel}
+      />
     </div>
   );
 };
