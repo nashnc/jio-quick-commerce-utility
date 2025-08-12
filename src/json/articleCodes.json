@@ -12,5 +12,68 @@
     "articleCode": "590000128",
     "articleLabel": "Drum Stick",
     "mostBroughtWeight": ""
+  },
+  {
+    "id": 3,
+    "isBilledAsEa": false,
+    "articleCode": "590001313",
+    "articleLabel": "Banana Njalipoovan",
+    "mostBroughtWeight": "1 kg"
+  },
+  {
+    "id": 4,
+    "isBilledAsEa": false,
+    "articleCode": "590003532",
+    "articleLabel": "Indian Garlic",
+    "mostBroughtWeight": "200 gm"
+  },
+  {
+    "id": 5,
+    "isBilledAsEa": false,
+    "articleCode": "490176161",
+    "articleLabel": "Loose Sugar",
+    "mostBroughtWeight": "1 kg"
+  },
+  {
+    "id": 6,
+    "isBilledAsEa": false,
+    "articleCode": "590000224",
+    "articleLabel": "Ash Gourd Slice ",
+    "mostBroughtWeight": "500 gm"
+  },
+  {
+    "id": 7,
+    "isBilledAsEa": false,
+    "articleCode": "590000189",
+    "articleLabel": "Okra (ladies finger)  ",
+    "mostBroughtWeight": "250 gm"
+  },
+  {
+    "id": 8,
+    "isBilledAsEa": false,
+    "articleCode": "590000170",
+    "articleLabel": "Cucumber Regular",
+    "mostBroughtWeight": "500 gm"
+  },
+  {
+    "id": 9,
+    "isBilledAsEa": true,
+    "articleCode": "590002370",
+    "articleLabel": "Cabbage",
+    "mostBroughtWeight": ""
+  },
+  {
+    "id": 10,
+    "isBilledAsEa": true,
+    "articleCode": "590001266",
+    "articleLabel": "Sweet Corn",
+    "mostBroughtWeight": ""
+  },
+  {
+    "id": 11,
+    "isBilledAsEa": true,
+    "articleCode": "590000117",
+    "articleLabel": "Curry Leaves 1 bunch",
+    "mostBroughtWeight": ""
   }
 ]
