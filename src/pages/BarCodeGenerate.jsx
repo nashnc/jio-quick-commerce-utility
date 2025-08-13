@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import articleCodes from "../json/articleCodes.json";
 import BarcodeDisplay from "../components/BarcodeDisplay";
 import ArticleCodeInput from "../components/ArticleCodeInput";
 
@@ -14,13 +13,41 @@ const weightOptions = [
   { value: "001150", label: "100 gm" },
 ];
 
+const gistRawBaseUrl =
+  "https://gist.githubusercontent.com/khayozreaper/b1eaa0ff484d3113864c7cff865d3bc3/raw/articleCodes.json";
+
 const BarCodeGenerate = () => {
+  const [articleCodes, setArticleCodes] = useState([]);
   const [articleCode, setArticleCode] = useState("");
   const [weight, setWeight] = useState(weightOptions[0].value);
   const [useDefaultPrefix, setUseDefaultPrefix] = useState(true);
   const [articleLabel, setArticleLabel] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const DEFAULT_CODE = `2110000590003515010150`;
+
+  useEffect(() => {
+    async function fetchArticleCodes() {
+      setLoading(true);
+      try {
+        // Cache bust param to ensure fresh fetch every page load
+        const url = `${gistRawBaseUrl}?cache_bust=${Date.now()}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch article codes");
+        const json = await response.json();
+        setArticleCodes(json);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        setArticleCodes([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchArticleCodes();
+  }, []); // Runs only once on mount (page load)
 
   useEffect(() => {
     if (!articleCode) {
@@ -57,7 +84,7 @@ const BarCodeGenerate = () => {
       setArticleLabel("");
       setUseDefaultPrefix(true);
     }
-  }, [articleCode]);
+  }, [articleCode, articleCodes]);
 
   const finalCode =
     articleCode.trim().length === 0
@@ -71,6 +98,9 @@ const BarCodeGenerate = () => {
       <header className="flex items-center justify-center pb-4">
         <h1>Barcode Generator</h1>
       </header>
+
+      {loading && <p>Loading article codes...</p>}
+      {error && <p className="text-red-500">Error: {error}</p>}
 
       <div className="mb-6 flex items-center justify-center gap-2">
         <input
