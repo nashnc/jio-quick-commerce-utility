@@ -45,13 +45,13 @@ export default function CopyButton({ data }) {
         .writeText(textToCopy)
         .then(() => alert("Copied!"))
         .catch(() => {
-          // fallback if clipboard.writeText fails
+          // Fallback if clipboard.writeText fails
           const success = fallbackCopyTextToClipboard(textToCopy);
           if (success) alert("Copied (fallback)!");
           else alert("Copy failed.");
         });
     } else {
-      // fallback for older browsers
+      // Fallback for older browsers
       const success = fallbackCopyTextToClipboard(textToCopy);
       if (success) alert("Copied (fallback)!");
       else alert("Clipboard API not supported.");
