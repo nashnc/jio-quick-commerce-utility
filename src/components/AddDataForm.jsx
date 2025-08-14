@@ -157,7 +157,7 @@ export default function AddDataForm({ onAddData, existingData }) {
                 ? "1px solid red"
                 : "1px solid #ccc",
               marginTop: "4px",
-              backgroundColor: formData.isBilledAsEa ? "#eee" : "white",
+              backgroundColor: formData.isBilledAsEa ? "#eee" : "",
             }}
           >
             {weightOptions.map((opt) => (
