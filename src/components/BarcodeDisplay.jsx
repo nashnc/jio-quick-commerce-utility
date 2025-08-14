@@ -18,8 +18,8 @@ const BarcodeDisplay = ({ finalCode, DEFAULT_CODE, articleLabel }) => {
         <p className="mt-1 text-center text-sm text-gray-600">Onion </p>
       )}
       <div>
-        <Barcode value={finalCode} className="h-[4em]" />
-      </div>{" "}
+        <Barcode value={finalCode} width={3} className="h-[4em]" />
+      </div>
       <div className="bg-white p-2">
         <QRCodeSVG value={finalCode} size={120} />
       </div>
