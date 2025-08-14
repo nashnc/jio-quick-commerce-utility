@@ -21,6 +21,7 @@ const BarCodeGenerate = () => {
   const [articleCode, setArticleCode] = useState("");
   const [weight, setWeight] = useState(weightOptions[0].value);
   const [useDefaultPrefix, setUseDefaultPrefix] = useState(true);
+  const [manualOverride, setManualOverride] = useState(false);
   const [articleLabel, setArticleLabel] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,6 @@ const BarCodeGenerate = () => {
     async function fetchArticleCodes() {
       setLoading(true);
       try {
-        // Cache bust param to ensure fresh fetch every page load
         const url = `${gistRawBaseUrl}?cache_bust=${Date.now()}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error("Failed to fetch article codes");
@@ -47,12 +47,14 @@ const BarCodeGenerate = () => {
     }
 
     fetchArticleCodes();
-  }, []); // Runs only once on mount (page load)
+  }, []);
 
   useEffect(() => {
     if (!articleCode) {
       setArticleLabel("");
-      setUseDefaultPrefix(true);
+      if (!manualOverride) {
+        setUseDefaultPrefix(true);
+      }
       return;
     }
 
@@ -63,10 +65,8 @@ const BarCodeGenerate = () => {
     if (matchedArticle) {
       setArticleLabel(matchedArticle.articleLabel || "");
 
-      if (matchedArticle.isBilledAsEa) {
-        setUseDefaultPrefix(false);
-      } else {
-        setUseDefaultPrefix(true);
+      if (!manualOverride) {
+        setUseDefaultPrefix(!matchedArticle.isBilledAsEa);
       }
 
       if (
@@ -82,9 +82,11 @@ const BarCodeGenerate = () => {
       }
     } else {
       setArticleLabel("");
-      setUseDefaultPrefix(true);
+      if (!manualOverride) {
+        setUseDefaultPrefix(true);
+      }
     }
-  }, [articleCode, articleCodes]);
+  }, [articleCode, articleCodes, manualOverride]);
 
   const finalCode =
     articleCode.trim().length === 0
@@ -107,11 +109,12 @@ const BarCodeGenerate = () => {
           type="checkbox"
           id="prefixToggle"
           checked={useDefaultPrefix}
-          readOnly
+          onChange={(e) => {
+            setUseDefaultPrefix(e.target.checked);
+            setManualOverride(true); // User has manually changed the toggle
+          }}
         />
-        <label htmlFor="prefixToggle">
-          Use 2110000 + weight for code generation
-        </label>
+        <label htmlFor="prefixToggle">Include Weight?</label>
       </div>
 
       <section>
@@ -122,7 +125,13 @@ const BarCodeGenerate = () => {
         >
           {useDefaultPrefix && <p>2110000</p>}
 
-          <ArticleCodeInput value={articleCode} onChange={setArticleCode} />
+          <ArticleCodeInput
+            value={articleCode}
+            onChange={(val) => {
+              setArticleCode(val);
+              setManualOverride(false); // Reset override on new code input
+            }}
+          />
 
           {useDefaultPrefix && (
             <select
