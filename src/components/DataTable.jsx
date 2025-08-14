@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EditRow from "./EditRow";
 
-export default function DataTable({ data, onEdit, onDelete, onUpdate }) {
+export default function DataTable({ data, onUpdate, onDelete }) {
   const [editId, setEditId] = useState(null);
 
   const handleEditClick = (id) => setEditId(id);
