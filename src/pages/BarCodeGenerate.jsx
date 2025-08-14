@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BarcodeDisplay from "../components/BarcodeDisplay";
 import ArticleCodeInput from "../components/ArticleCodeInput";
+import ProductSearchInput from "../components/ProductSearchInput";
 
 const weightOptions = [
   { value: "010150", label: "1 kg" },
@@ -96,69 +97,80 @@ const BarCodeGenerate = () => {
         : articleCode;
 
   return (
-    <div className="container px-4 pt-[10%]">
-      <header className="flex items-center justify-center pb-4">
-        <h1>Barcode Generator</h1>
-      </header>
+    <>
+      <div className="container px-4 pt-[10%]">
+        <header className="flex items-center justify-center pb-4">
+          <h1>Barcode Generator</h1>
+        </header>
 
-      {loading && <p>Loading article codes...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
+        {loading && <p>Loading article codes...</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
 
-      <div className="mb-6 flex items-center justify-center gap-2">
-        <input
-          type="checkbox"
-          id="prefixToggle"
-          checked={useDefaultPrefix}
-          onChange={(e) => {
-            setUseDefaultPrefix(e.target.checked);
-            setManualOverride(true); // User has manually changed the toggle
-          }}
-        />
-        <label htmlFor="prefixToggle">Include Weight?</label>
-      </div>
-
-      <section>
-        <div
-          className={`mb-4 flex flex-col items-center ${
-            useDefaultPrefix ? "justify-between" : "justify-center"
-          } gap-3 sm:flex-row`}
-        >
-          {useDefaultPrefix && <p>2110000</p>}
-
-          <ArticleCodeInput
-            value={articleCode}
-            onChange={(val) => {
-              setArticleCode(val);
-              setManualOverride(false); // Reset override on new code input
+        <div className="mb-6 flex items-center justify-center gap-2">
+          <input
+            type="checkbox"
+            id="prefixToggle"
+            checked={useDefaultPrefix}
+            onChange={(e) => {
+              setUseDefaultPrefix(e.target.checked);
+              setManualOverride(true); // User has manually changed the toggle
             }}
           />
-
-          {useDefaultPrefix && (
-            <select
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              className="rounded-md border border-[rgba(0,0,0,0.5)] p-1 text-green-950"
-            >
-              {weightOptions.map((option) => (
-                <option
-                  key={option.value}
-                  className="text-green-900"
-                  value={option.value}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          )}
+          <label htmlFor="prefixToggle">Include Weight?</label>
         </div>
-      </section>
 
-      <BarcodeDisplay
-        finalCode={finalCode}
-        DEFAULT_CODE={DEFAULT_CODE}
-        articleLabel={articleLabel}
-      />
-    </div>
+        <section>
+          <div
+            className={`mb-4 flex flex-col items-center ${
+              useDefaultPrefix ? "justify-between" : "justify-center"
+            } gap-3 sm:flex-row`}
+          >
+            {useDefaultPrefix && <p>2110000</p>}
+
+            <ArticleCodeInput
+              value={articleCode}
+              onChange={(val) => {
+                setArticleCode(val);
+                setManualOverride(false); // Reset override on new code input
+              }}
+            />
+
+            {useDefaultPrefix && (
+              <select
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                className="rounded-md border border-[rgba(0,0,0,0.5)] p-1 text-green-950"
+              >
+                {weightOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    className="text-green-900"
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        </section>
+
+        <BarcodeDisplay
+          finalCode={finalCode}
+          DEFAULT_CODE={DEFAULT_CODE}
+          articleLabel={articleLabel}
+        />
+
+        {/*   */}
+
+        <ProductSearchInput
+          onSelect={(selectedCode) => {
+            setArticleCode(selectedCode);
+            setManualOverride(false); // mimic manual input behavior
+          }}
+        />
+      </div>
+    </>
   );
 };
 
