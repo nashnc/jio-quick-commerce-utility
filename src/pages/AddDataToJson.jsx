@@ -5,11 +5,12 @@ import CopyButton from "../components/CopyButton";
 
 export default function AddDataToJson() {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]); // Separate state for search results
 
   const gistRawUrl =
     "https://gist.githubusercontent.com/khayozreaper/b1eaa0ff484d3113864c7cff865d3bc3/raw/articleCodes.json";
 
-  // Fetch data from gist on mount
+  // Fetch data from gist on mount and store in localStorage
   useEffect(() => {
     async function fetchData() {
       try {
@@ -17,12 +18,17 @@ export default function AddDataToJson() {
         if (!response.ok) throw new Error("Failed to fetch gist data");
         const json = await response.json();
         setData(json);
+        setFilteredData(json); // Initialize filtered data
         localStorage.setItem("articles", JSON.stringify(json));
       } catch (error) {
         console.error(error);
-        // fallback: load from localStorage if available
+        // Fallback: load from localStorage if available
         const saved = localStorage.getItem("articles");
-        if (saved) setData(JSON.parse(saved));
+        if (saved) {
+          const parsedData = JSON.parse(saved);
+          setData(parsedData);
+          setFilteredData(parsedData);
+        }
       }
     }
     fetchData();
@@ -31,6 +37,7 @@ export default function AddDataToJson() {
   // Update state + localStorage helper
   const saveToStorage = (newData) => {
     setData(newData);
+    setFilteredData(newData); // Update filtered data as well
     localStorage.setItem("articles", JSON.stringify(newData));
   };
 
@@ -54,6 +61,21 @@ export default function AddDataToJson() {
     }
   };
 
+  // Search handler
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    if (!term) {
+      setFilteredData(data); // Reset to full data if search is empty
+      return;
+    }
+    const filtered = data.filter(
+      (item) =>
+        item.articleCode.toLowerCase().includes(term) ||
+        item.articleLabel.toLowerCase().includes(term),
+    );
+    setFilteredData(filtered);
+  };
+
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "1rem" }}>
       <AddDataForm onAddData={handleAddData} existingData={data} />
@@ -64,16 +86,7 @@ export default function AddDataToJson() {
       <input
         type="text"
         placeholder="Search by code or label..."
-        onChange={(e) => {
-          const term = e.target.value.toLowerCase();
-          setData((oldData) =>
-            oldData.filter(
-              (item) =>
-                item.articleCode.toLowerCase().includes(term) ||
-                item.articleLabel.toLowerCase().includes(term),
-            ),
-          );
-        }}
+        onChange={handleSearch}
         style={{ marginBottom: 16, padding: 8, width: "100%" }}
       />
 
@@ -99,7 +112,7 @@ export default function AddDataToJson() {
           </tr>
         </thead>
         <DataTable
-          data={data}
+          data={filteredData} // Use filtered data for display
           onUpdate={handleUpdate}
           onDelete={handleDelete}
         />
