@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Save, X } from "lucide-react";
 
 const weightOptions = [
   { value: "", label: "Select Weight" },
@@ -14,41 +13,40 @@ const weightOptions = [
 ];
 
 export default function EditRow({ item, onSave, onCancel, existingData }) {
-  const [editData, setEditData] = useState({ ...item });
+  const [formData, setFormData] = useState({ ...item });
   const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setEditData((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
-      ...(name === "isBilledAsEa" && checked ? { mostBroughtWeight: "" } : {}),
     }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const validateEdit = () => {
+  const validateForm = () => {
     const newErrors = {};
 
-    if (!editData.articleCode.trim()) {
+    if (!formData.articleCode.trim()) {
       newErrors.articleCode = "Article Code is required";
     } else if (
       existingData.some(
-        (i) =>
-          i.id !== editData.id &&
-          i.articleCode === editData.articleCode &&
-          i.articleLabel === editData.articleLabel &&
-          i.mostBroughtWeight === editData.mostBroughtWeight,
+        (dataItem) =>
+          dataItem.id !== item.id &&
+          dataItem.articleCode === formData.articleCode &&
+          dataItem.articleLabel === formData.articleLabel &&
+          dataItem.mostBroughtWeight === formData.mostBroughtWeight,
       )
     ) {
       newErrors.articleCode = "Duplicate article exists";
     }
 
-    if (!editData.articleLabel.trim()) {
+    if (!formData.articleLabel.trim()) {
       newErrors.articleLabel = "Article Label is required";
     }
 
-    if (!editData.isBilledAsEa && !editData.mostBroughtWeight) {
+    if (!formData.isBilledAsEa && !formData.mostBroughtWeight) {
       newErrors.mostBroughtWeight = "Weight is required";
     }
 
@@ -56,9 +54,9 @@ export default function EditRow({ item, onSave, onCancel, existingData }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = () => {
-    if (validateEdit()) {
-      onSave(editData);
+  const handleSubmit = () => {
+    if (validateForm()) {
+      onSave(formData);
     }
   };
 
@@ -71,17 +69,16 @@ export default function EditRow({ item, onSave, onCancel, existingData }) {
         <input
           type="text"
           name="articleCode"
-          value={editData.articleCode}
-          onChange={handleChange}
+          value={formData.articleCode}
+          onChange={handleInputChange}
           style={{
             width: "100%",
-            padding: "4px 6px",
-            borderRadius: "4px",
+            padding: "4px",
             border: errors.articleCode ? "1px solid red" : "1px solid #ccc",
           }}
         />
         {errors.articleCode && (
-          <div style={{ fontSize: "0.75rem", color: "red" }}>
+          <div style={{ color: "red", fontSize: "0.8rem" }}>
             {errors.articleCode}
           </div>
         )}
@@ -90,17 +87,16 @@ export default function EditRow({ item, onSave, onCancel, existingData }) {
         <input
           type="text"
           name="articleLabel"
-          value={editData.articleLabel}
-          onChange={handleChange}
+          value={formData.articleLabel}
+          onChange={handleInputChange}
           style={{
             width: "100%",
-            padding: "4px 6px",
-            borderRadius: "4px",
+            padding: "4px",
             border: errors.articleLabel ? "1px solid red" : "1px solid #ccc",
           }}
         />
         {errors.articleLabel && (
-          <div style={{ fontSize: "0.75rem", color: "red" }}>
+          <div style={{ color: "red", fontSize: "0.8rem" }}>
             {errors.articleLabel}
           </div>
         )}
@@ -108,17 +104,16 @@ export default function EditRow({ item, onSave, onCancel, existingData }) {
       <td style={{ padding: "6px 8px", border: "1px solid #ddd" }}>
         <select
           name="mostBroughtWeight"
-          value={editData.mostBroughtWeight}
-          onChange={handleChange}
-          disabled={editData.isBilledAsEa}
+          value={formData.mostBroughtWeight}
+          onChange={handleInputChange}
+          disabled={formData.isBilledAsEa}
           style={{
             width: "100%",
-            padding: "4px 6px",
-            borderRadius: "4px",
+            padding: "4px",
             border: errors.mostBroughtWeight
               ? "1px solid red"
               : "1px solid #ccc",
-            backgroundColor: editData.isBilledAsEa ? "#eee" : "white",
+            backgroundColor: formData.isBilledAsEa ? "#eee" : "",
           }}
         >
           {weightOptions.map((opt) => (
@@ -128,7 +123,7 @@ export default function EditRow({ item, onSave, onCancel, existingData }) {
           ))}
         </select>
         {errors.mostBroughtWeight && (
-          <div style={{ fontSize: "0.75rem", color: "red" }}>
+          <div style={{ color: "red", fontSize: "0.8rem" }}>
             {errors.mostBroughtWeight}
           </div>
         )}
@@ -143,21 +138,15 @@ export default function EditRow({ item, onSave, onCancel, existingData }) {
         <input
           type="checkbox"
           name="isBilledAsEa"
-          checked={editData.isBilledAsEa}
-          onChange={handleChange}
+          checked={formData.isBilledAsEa}
+          onChange={handleInputChange}
         />
       </td>
       <td style={{ padding: "6px 8px", border: "1px solid #ddd" }}>
-        <button
-          onClick={handleSave}
-          title="Save"
-          style={{ marginRight: "8px" }}
-        >
-          <Save size={16} />
+        <button onClick={handleSubmit} style={{ marginRight: "8px" }}>
+          Save
         </button>
-        <button onClick={onCancel} title="Cancel">
-          <X size={16} />
-        </button>
+        <button onClick={onCancel}>Cancel</button>
       </td>
     </tr>
   );
