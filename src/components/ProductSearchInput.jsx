@@ -1,10 +1,6 @@
-// components/ProductSearchInput.jsx
 import React, { useEffect, useState } from "react";
 
-const gistRawBaseUrl =
-  "https://gist.githubusercontent.com/khayozreaper/b1eaa0ff484d3113864c7cff865d3bc3/raw/articleCodes.json";
-
-const ProductSearchInput = ({ onSelect }) => {
+const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [productList, setProductList] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -32,16 +28,13 @@ const ProductSearchInput = ({ onSelect }) => {
       return;
     }
 
-    const term = searchTerm.toLowerCase();
     const filteredResults = productList
-      .filter(
-        (item) =>
-          item.articleLabel?.toLowerCase().includes(term) ||
-          item.mostBroughtWeight?.toLowerCase().includes(term),
+      .filter((item) =>
+        item.articleCode?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       .map((item) => ({
         ...item,
-        displayLabel: `${item.articleLabel} - ${item.mostBroughtWeight}`,
+        displayLabel: `${item.articleCode} → ${item.upcCode}`,
       }));
 
     setFiltered(filteredResults);
@@ -51,7 +44,13 @@ const ProductSearchInput = ({ onSelect }) => {
   const handleSelect = (item) => {
     setSearchTerm(item.displayLabel);
     setShowDropdown(false);
-    onSelect(item.articleCode); // Pass articleCode back
+    onSelect(item.upcCode); // Pass UPC instead of article code
+  };
+
+  const handleDoubleClick = () => {
+    setSearchTerm("");
+    setFiltered([]);
+    setShowDropdown(false);
   };
 
   return (
@@ -60,13 +59,18 @@ const ProductSearchInput = ({ onSelect }) => {
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search... wont work yet"
+        onDoubleClick={handleDoubleClick}
+        placeholder={placeHolder}
         className="w-full rounded border px-3 py-2 shadow"
       />
       {showDropdown && filtered.length > 0 && (
         <ul className="absolute z-10 max-h-60 w-full overflow-y-auto rounded border shadow-md">
           {filtered.map((item) => (
-            <li key={item.articleCode} onClick={() => handleSelect(item)}>
+            <li
+              key={item.articleCode}
+              onClick={() => handleSelect(item)}
+              className="cursor-pointer px-3 py-1"
+            >
               {item.displayLabel}
             </li>
           ))}
