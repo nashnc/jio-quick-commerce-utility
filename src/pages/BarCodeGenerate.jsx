@@ -3,16 +3,16 @@ import BarcodeDisplay from "../components/BarcodeDisplay";
 import ArticleCodeInput from "../components/ArticleCodeInput";
 import ProductSearchInput from "../components/ProductSearchInput";
 
-const weightOptions = [
-  { value: "010150", label: "1 kg" },
-  { value: "020150", label: "2 kg" },
-  { value: "007810", label: "750 gm" },
-  { value: "005150", label: "500 gm" },
-  { value: "002710", label: "250 gm" },
-  { value: "002150", label: "200 gm" },
-  { value: "015150", label: "150 gm" },
-  { value: "001150", label: "100 gm" },
-];
+  const weightOptions = [
+    { value: "010150", label: "1 kg" },
+    { value: "020150", label: "2 kg" },
+    { value: "007810", label: "750 gm" },
+    { value: "005150", label: "500 gm" },
+    { value: "002710", label: "250 gm" },
+    { value: "002150", label: "200 gm" },
+    { value: "015150", label: "150 gm" },
+    { value: "001150", label: "100 gm" },
+  ];
 
 const gistRawBaseUrl =
   "https://gist.githubusercontent.com/khayozreaper/b1eaa0ff484d3113864c7cff865d3bc3/raw/articleCodes.json";
@@ -113,7 +113,7 @@ const BarCodeGenerate = () => {
             checked={useDefaultPrefix}
             onChange={(e) => {
               setUseDefaultPrefix(e.target.checked);
-              setManualOverride(true); // User has manually changed the toggle
+              setManualOverride(true);
             }}
           />
           <label htmlFor="prefixToggle">Include Weight?</label>
@@ -131,7 +131,7 @@ const BarCodeGenerate = () => {
               value={articleCode}
               onChange={(val) => {
                 setArticleCode(val);
-                setManualOverride(false); // Reset override on new code input
+                setManualOverride(false);
               }}
             />
 
@@ -161,13 +161,25 @@ const BarCodeGenerate = () => {
           articleLabel={articleLabel}
         />
 
-        {/*   */}
-
+        {/* Existing product search */}
         <ProductSearchInput
           onSelect={(selectedCode) => {
             setArticleCode(selectedCode);
-            setManualOverride(false); // mimic manual input behavior
+            setManualOverride(false);
           }}
+          gistRawBaseUrl={gistRawBaseUrl}
+          placeHolder="Search... wont work yet"
+        />
+
+        {/* NEW search by articleCode, generate UPC barcode */}
+        <ProductSearchInput
+          onSelect={(selectedUpcCode) => {
+            setArticleCode(selectedUpcCode);
+            setManualOverride(true);
+            setUseDefaultPrefix(false); // Treat as UPC, don't prefix
+          }}
+          gistRawBaseUrl="https://gist.githubusercontent.com/khayozreaper/db87a671f23c45a6443df222208bb71b/raw/jiomartqcc.json"
+          placeHolder="Search by Article Code for UPC"
         />
       </div>
     </>
