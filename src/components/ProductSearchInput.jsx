@@ -1,6 +1,12 @@
+// src/components/ProductSearchInput.jsx
 import React, { useEffect, useState } from "react";
 
-const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
+const ProductSearchInput = ({
+  onSelect,
+  gistRawBaseUrl,
+  placeHolder,
+  returnField,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [productList, setProductList] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -10,7 +16,12 @@ const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
     async function fetchData() {
       try {
         const url = `${gistRawBaseUrl}?cache_bust=${Date.now()}`;
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
         const data = await res.json();
         setProductList(data);
       } catch (err) {
@@ -19,7 +30,7 @@ const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
     }
 
     fetchData();
-  }, []);
+  }, [gistRawBaseUrl]);
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -29,12 +40,14 @@ const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
     }
 
     const filteredResults = productList
-      .filter((item) =>
-        item.articleCode?.toLowerCase().includes(searchTerm.toLowerCase()),
+      .filter(
+        (item) =>
+          item.articleCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.articleLabel?.toLowerCase().includes(searchTerm.toLowerCase()), // Filter by articleLabel
       )
       .map((item) => ({
         ...item,
-        displayLabel: `${item.articleCode} → ${item.upcCode}`,
+        displayLabel: `${item.articleCode} → ${item.articleLabel}`, // Adjusted displayLabel
       }));
 
     setFiltered(filteredResults);
@@ -44,7 +57,7 @@ const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
   const handleSelect = (item) => {
     setSearchTerm(item.displayLabel);
     setShowDropdown(false);
-    onSelect(item.upcCode); // Pass UPC instead of article code
+    onSelect(item[returnField]);
   };
 
   const handleDoubleClick = () => {
@@ -64,7 +77,7 @@ const ProductSearchInput = ({ onSelect, gistRawBaseUrl, placeHolder }) => {
         className="w-full rounded border px-3 py-2 shadow"
       />
       {showDropdown && filtered.length > 0 && (
-        <ul className="absolute z-10 max-h-60 w-full overflow-y-auto rounded border shadow-md">
+        <ul className="absolute z-10 max-h-60 w-full overflow-y-auto rounded border bg-green-950 shadow-md">
           {filtered.map((item) => (
             <li
               key={item.articleCode}

@@ -1,21 +1,24 @@
+// src/pages/BarCodeGenerate.jsx
 import React, { useState, useEffect } from "react";
 import BarcodeDisplay from "../components/BarcodeDisplay";
 import ArticleCodeInput from "../components/ArticleCodeInput";
 import ProductSearchInput from "../components/ProductSearchInput";
 
-  const weightOptions = [
-    { value: "010150", label: "1 kg" },
-    { value: "020150", label: "2 kg" },
-    { value: "007810", label: "750 gm" },
-    { value: "005150", label: "500 gm" },
-    { value: "002710", label: "250 gm" },
-    { value: "002150", label: "200 gm" },
-    { value: "015150", label: "150 gm" },
-    { value: "001150", label: "100 gm" },
-  ];
+const weightOptions = [
+  { value: "010150", label: "1 kg" },
+  { value: "020150", label: "2 kg" },
+  { value: "007810", label: "750 gm" },
+  { value: "005150", label: "500 gm" },
+  { value: "002710", label: "250 gm" },
+  { value: "002150", label: "200 gm" },
+  { value: "015150", label: "150 gm" },
+  { value: "001150", label: "100 gm" },
+];
 
-const gistRawBaseUrl =
+const gistRawBaseUrlArticleCodes =
   "https://gist.githubusercontent.com/khayozreaper/b1eaa0ff484d3113864c7cff865d3bc3/raw/articleCodes.json";
+const gistRawBaseUrlJiomartQCC =
+  "https://gist.githubusercontent.com/khayozreaper/db87a671f23c45a6443df222208bb71b/raw/jiomartqcc.json";
 
 const BarCodeGenerate = () => {
   const [articleCodes, setArticleCodes] = useState([]);
@@ -33,7 +36,7 @@ const BarCodeGenerate = () => {
     async function fetchArticleCodes() {
       setLoading(true);
       try {
-        const url = `${gistRawBaseUrl}?cache_bust=${Date.now()}`;
+        const url = `${gistRawBaseUrlArticleCodes}?cache_bust=${Date.now()}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error("Failed to fetch article codes");
         const json = await response.json();
@@ -161,25 +164,27 @@ const BarCodeGenerate = () => {
           articleLabel={articleLabel}
         />
 
-        {/* Existing product search */}
+        {/* Existing product search (for articleCodes.json) */}
         <ProductSearchInput
-          onSelect={(selectedCode) => {
-            setArticleCode(selectedCode);
+          onSelect={(selectedArticleCode) => {
+            setArticleCode(selectedArticleCode);
             setManualOverride(false);
           }}
-          gistRawBaseUrl={gistRawBaseUrl}
-          placeHolder="Search... wont work yet"
+          gistRawBaseUrl={gistRawBaseUrlArticleCodes}
+          placeHolder="Search by Article Code (e.g., 590003515)"
+          returnField="articleCode" // Specify to return articleCode
         />
 
-        {/* NEW search by articleCode, generate UPC barcode */}
+        {/* NEW search by articleCode, generate UPC barcode (for jiomartqcc.json) */}
         <ProductSearchInput
           onSelect={(selectedUpcCode) => {
             setArticleCode(selectedUpcCode);
             setManualOverride(true);
             setUseDefaultPrefix(false); // Treat as UPC, don't prefix
           }}
-          gistRawBaseUrl="https://gist.githubusercontent.com/khayozreaper/db87a671f23c45a6443df222208bb71b/raw/jiomartqcc.json"
-          placeHolder="Search by Article Code for UPC"
+          gistRawBaseUrl={gistRawBaseUrlJiomartQCC}
+          placeHolder="Search by Article Code for UPC (e.g., 590000001)"
+          returnField="upcCode" // Specify to return upcCode
         />
       </div>
     </>
