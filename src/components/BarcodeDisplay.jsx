@@ -35,9 +35,9 @@ const BarcodeDisplay = ({ finalCode, DEFAULT_CODE, articleLabel }) => {
       </div>
 
       {/* QR Code */}
-      <div className="bg-white p-2">
+      {/* <div className="bg-white p-2">
         <QRCodeSVG value={finalCode} size={120} />
-      </div>
+      </div> */}
     </section>
   );
 };
